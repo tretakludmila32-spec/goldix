@@ -1,13 +1,6 @@
 import crypto from "node:crypto";
 import type { Context, Config } from "@netlify/functions";
 
-/**
- * WayForPay Purchase — створення платіжної сесії.
- * POST /api/create-payment з JSON:
- *   { orderRef, products: [{name, price, count}], clientFirstName, clientLastName, clientEmail, clientPhone }
- * Відповідь: HTML з прихованою формою і auto-submit на https://secure.wayforpay.com/pay
- */
-
 type Product = { name: string; price: number; count: number };
 type OrderPayload = {
   orderRef: string;
@@ -18,7 +11,6 @@ type OrderPayload = {
   clientPhone?: string;
 };
 
-// HMAC_MD5 підпис за документацією WayForPay (https://wiki.wayforpay.com/view/852102)
 function buildSignature(
   merchantAccount: string,
   merchantDomain: string,
@@ -63,9 +55,16 @@ export default async (req: Request, _context: Context) => {
   const secretKey = Netlify.env.get("WFP_SECRET_KEY");
   const siteUrl = Netlify.env.get("WFP_SITE_URL") || "https://goldix.com.ua";
 
+  console.log("[create-payment] env:", {
+    merchantAccount: merchantAccount ? "SET" : "MISSING",
+    merchantDomain,
+    secretKey: secretKey ? `SET(len=${secretKey.length})` : "MISSING",
+    siteUrl,
+  });
+
   if (!merchantAccount || !secretKey) {
     return new Response(
-      JSON.stringify({ error: "WFP_MERCHANT_ACCOUNT або WFP_SECRET_KEY не налаштовано" }),
+      JSON.stringify({ error: "WFP env not configured", merchantAccount: !!merchantAccount, secretKey: !!secretKey }),
       { status: 500, headers: { "Content-Type": "application/json" } },
     );
   }
@@ -73,12 +72,15 @@ export default async (req: Request, _context: Context) => {
   let payload: OrderPayload;
   try {
     payload = (await req.json()) as OrderPayload;
-  } catch {
-    return new Response(JSON.stringify({ error: "Invalid JSON" }), {
+  } catch (err) {
+    console.error("[create-payment] invalid JSON:", err);
+    return new Response(JSON.stringify({ error: "Invalid JSON body" }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
     });
   }
+
+  console.log("[create-payment] payload:", { orderRef: payload.orderRef, products: payload.products?.length });
 
   if (!payload.orderRef || !Array.isArray(payload.products) || payload.products.length === 0) {
     return new Response(JSON.stringify({ error: "Missing orderRef or products" }), {
@@ -93,49 +95,36 @@ export default async (req: Request, _context: Context) => {
     .toFixed(2);
   const currency = "UAH";
 
-  const signature = buildSignature(
-    merchantAccount,
-    merchantDomain,
-    payload.orderRef,
-    orderDate,
-    amount,
-    currency,
-    payload.products,
-    secretKey,
-  );
+  try {
+    const signature = buildSignature(
+      merchantAccount,
+      merchantDomain,
+      payload.orderRef,
+      orderDate,
+      amount,
+      currency,
+      payload.products,
+      secretKey,
+    );
+    console.log("[create-payment] signature:", { amount, sigPrefix: signature.substring(0, 8) });
 
-  // Формуємо HTML з auto-submit формою — браузер миттєво редиректить на WFP
-  const productNameInputs = payload.products
-    .map((p) => `<input type="hidden" name="productName[]" value="${escapeHtml(p.name)}"/>`)
-    .join("\n");
-  const productPriceInputs = payload.products
-    .map((p) => `<input type="hidden" name="productPrice[]" value="${p.price}"/>`)
-    .join("\n");
-  const productCountInputs = payload.products
-    .map((p) => `<input type="hidden" name="productCount[]" value="${p.count}"/>`)
-    .join("\n");
+    const productNameInputs = payload.products
+      .map((p) => `<input type="hidden" name="productName[]" value="${escapeHtml(p.name)}"/>`)
+      .join("\n");
+    const productPriceInputs = payload.products
+      .map((p) => `<input type="hidden" name="productPrice[]" value="${p.price}"/>`)
+      .join("\n");
+    const productCountInputs = payload.products
+      .map((p) => `<input type="hidden" name="productCount[]" value="${p.count}"/>`)
+      .join("\n");
 
-  const html = `<!DOCTYPE html>
+    const html = `<!DOCTYPE html>
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Перенаправлення на WayForPay...</title>
-<style>
-  body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;background:#f5f5f7;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;color:#1d1d1f;text-align:center}
-  .box{background:#fff;padding:40px;border-radius:20px;box-shadow:0 10px 40px rgba(0,0,0,0.08);max-width:420px}
-  h1{font-size:22px;margin:0 0 10px}
-  p{color:#6e6e73;margin:0 0 20px;font-size:15px}
-  .spinner{width:40px;height:40px;border:3px solid #f5f5f7;border-top-color:#d4a017;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 20px}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  button{padding:12px 24px;background:#d4a017;color:#fff;border:none;border-radius:980px;font-size:15px;font-weight:600;cursor:pointer}
-</style>
+<title>WayForPay...</title>
 </head>
 <body>
-<div class="box">
-<div class="spinner"></div>
-<h1>Переходимо до оплати</h1>
-<p>Зараз ви будете перенаправлені на захищену сторінку WayForPay...</p>
 <form id="wfp" method="post" action="https://secure.wayforpay.com/pay" accept-charset="utf-8">
 <input type="hidden" name="merchantAccount" value="${escapeHtml(merchantAccount)}"/>
 <input type="hidden" name="merchantAuthType" value="SimpleSignature"/>
@@ -157,19 +146,18 @@ ${payload.clientLastName ? `<input type="hidden" name="clientLastName" value="${
 ${payload.clientEmail ? `<input type="hidden" name="clientEmail" value="${escapeHtml(payload.clientEmail)}"/>` : ""}
 ${payload.clientPhone ? `<input type="hidden" name="clientPhone" value="${escapeHtml(payload.clientPhone)}"/>` : ""}
 <input type="hidden" name="defaultPaymentSystem" value="card"/>
-<noscript><button type="submit">Перейти до оплати</button></noscript>
+<noscript><button type="submit">Оплатити</button></noscript>
 </form>
 <script>document.getElementById('wfp').submit();</script>
-</div>
 </body>
 </html>`;
 
-  return new Response(html, {
-    status: 200,
-    headers: { "Content-Type": "text/html; charset=utf-8" },
-  });
-};
-
-export const config: Config = {
-  path: "/api/create-payment",
-};
+    return new Response(html, {
+      status: 200,
+      headers: { "Content-Type": "text/html; charset=utf-8" },
+    });
+  } catch (err) {
+    console.error("[create-payment] error:", err);
+    return new Response(
+      JSON.stringify({ error: "Server error", message: err instanceof Error ? err.message : String(err) }),
+      { status: 500, headers: { "
