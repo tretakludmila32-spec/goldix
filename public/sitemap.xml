@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- Головна -->
+  <url>
+    <loc>https://goldix.com.ua/</loc>
+    <lastmod>2026-04-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Категорії -->
+  <url>
+    <loc>https://goldix.com.ua/numismatic</loc>
+    <lastmod>2026-04-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://goldix.com.ua/philatelic</loc>
+    <lastmod>2026-04-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Товари -->
+  <url>
+    <loc>https://goldix.com.ua/product/NUM-QUAD-38</loc>
+    <lastmod>2026-04-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://goldix.com.ua/images/product-num-1.png</image:loc>
+      <image:title>Капсула для монет Leuchtturm QUADRUM 38 мм</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://goldix.com.ua/product/NUM-ALBUM-NUMIS</loc>
+    <lastmod>2026-04-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://goldix.com.ua/images/product-num-2.png</image:loc>
+      <image:title>Альбом для монет Leuchtturm NUMIS з футляром</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://goldix.com.ua/product/NUM-TRAY-12</loc>
+    <lastmod>2026-04-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://goldix.com.ua/images/product-num-3.png</image:loc>
+      <image:title>Планшет Lindner для 12 монет у капсулах QUADRUM</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://goldix.com.ua/product/PHI-COMFORT-A4</loc>
+    <lastmod>2026-04-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://goldix.com.ua/images/product-phi-1.png</image:loc>
+      <image:title>Кляйсер для марок Leuchtturm COMFORT A4</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://goldix.com.ua/product/PHI-HAWID-25</loc>
+    <lastmod>2026-04-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://goldix.com.ua/images/product-phi-2.png</image:loc>
+      <image:title>Клемташі Hawid, 25 захисних смуг для марок</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://goldix.com.ua/product/PHI-VARIO-ALB</loc>
+    <lastmod>2026-04-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://goldix.com.ua/images/product-phi-3.png</image:loc>
+      <image:title>Альбом для марок Leuchtturm VARIO</image:title>
+    </image:image>
+  </url>
+
+  <!-- Інформаційні сторінки -->
+  <url>
+    <loc>https://goldix.com.ua/about</loc>
+    <lastmod>2026-04-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://goldix.com.ua/delivery</loc>
+    <lastmod>2026-04-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://goldix.com.ua/contacts</loc>
+    <lastmod>2026-04-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Правові сторінки -->
+  <url>
+    <loc>https://goldix.com.ua/oferta</loc>
+    <lastmod>2026-04-21</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://goldix.com.ua/privacy</loc>
+    <lastmod>2026-04-21</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://goldix.com.ua/returns</loc>
+    <lastmod>2026-04-21</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://goldix.com.ua/cookies</loc>
+    <lastmod>2026-04-21</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+</urlset>
