@@ -9,8 +9,14 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
-# SPA fallback — усі не-API шляхи ведуть на index.html для React-роутинга
-# ВАЖЛИВО: /api/* обробляється serverless functions (див. in-code config path)
+# API — функції мають пріоритет над SPA fallback
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
+# SPA fallback для React Router
 [[redirects]]
   from = "/*"
   to = "/index.html"
